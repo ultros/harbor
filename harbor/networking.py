@@ -1,15 +1,18 @@
+import concurrent.futures
 import socket
+from ipaddress import IPv4Network
 
 
 class Networking:
 
-    def __init__(self, ips: list, ports: int):
+    def __init__(self, ips: IPv4Network, ports: list):
         self._ips = ips
         self.ports = ports
         self.hostnames = []
+        self.socket_list = []
 
     @property
-    def ips(self) -> list:
+    def ips(self) -> IPv4Network:
         return self._ips
 
     @ips.setter
@@ -27,31 +30,67 @@ class Networking:
     def delete_hostnames(self):
         self.hostnames = []
 
+    def build_socket_list(self):
+        """Builds a list of IP/Port pairs (sockets)
+        and returns this list.
+        """
+        socket_list = []
 
-class TcpPortscan(Networking):
-    pass
+        for ip in self.ips.hosts():
+            for port in self.ports:
+                socket_list.append((str(ip), port))
 
+        return socket_list
 
-class UdpPortscan(Networking):
-    pass
+    @staticmethod
+    def socket_connect(ip: str, port: int, scan_type: str):
 
+        match scan_type:
+            case "tcp":
+                protocol = socket.SOCK_STREAM
+            case "udp":
+                protocol = socket.SOCK_DGRAM
+            case _:
+                '[!] Specify a protocol for scan (i.e. "tcp" or "udp")'
+                exit(0)
+        try:
+            connection = socket.socket(socket.AF_INET, protocol)
+            connection.settimeout(3.0)
 
-class PingSweep(Networking):
-    pass
+            if connection.connect_ex((ip, port)) == 0:  # if connection was successful
+                return ip, port
 
+            connection.close()
 
-class XmasTreeScan(Networking):
-    pass
+        except Exception as e:
+            print(e)
 
+    def do_scan(self, scan_type: str):
+        """Prepare a concurrent TCP or UDP scan against a list of IP addresses
+        and port numbers.
+        """
 
-nw = Networking(["test", "test2", "test3"], 22)
-# print(nw.ips)
+        i = 0
+        print("[+] Building socket list...")
+        socket_list = self.build_socket_list()
+        print(f"[+] {len(socket_list)} entries in socket list.")
 
-tcp_port_scan = TcpPortscan(["173.236.172.84"], 22)
-#print(tcp_port_scan.ips)
-tcp_port_scan.get_hostnames()
-print(tcp_port_scan.hostnames[0][0])
+        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+            futures = []
 
+            for entry in socket_list:
+
+                ip = entry[0]
+                port = entry[1]
+                futures.append(executor.submit(self.socket_connect, ip, port, scan_type))
+
+            for future in concurrent.futures.as_completed(futures):
+                response = future.result()
+                if response is not None:
+                    print(f"{response[0]}:{response[1]}")
+
+                i += 1
+                print(f"{i} out of {len(socket_list)}", end="\r")
 
 
 class SocksProxy:
@@ -64,4 +103,7 @@ class SocksProxy:
         self.proxy_password = proxy_password
 
 
-socks = SocksProxy("asdf", "asdf", 33, "asdf", "asdf")
+# socks = SocksProxy("asdf", "asdf", 33, "asdf", "asdf")
+
+
+
