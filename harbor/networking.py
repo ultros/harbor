@@ -75,11 +75,10 @@ class Networking:
         socket_list = self.build_socket_list()
         print(f"[+] {len(socket_list)} entries in socket list.")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
             futures = []
 
             for entry in socket_list:
-
                 ip = entry[0]
                 port = entry[1]
                 futures.append(executor.submit(self.socket_connect, ip, port, scan_type))
@@ -92,6 +91,7 @@ class Networking:
                 i += 1
                 print(f"{i} out of {len(socket_list)}", end="\r")
 
+            print(f"[+] Scan completed ({i} of {len(socket_list)})")
 
 class SocksProxy:
 
@@ -101,9 +101,3 @@ class SocksProxy:
         self.proxy_port = proxy_port
         self.proxy_username = proxy_username
         self.proxy_password = proxy_password
-
-
-# socks = SocksProxy("asdf", "asdf", 33, "asdf", "asdf")
-
-
-
