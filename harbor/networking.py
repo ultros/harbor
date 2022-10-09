@@ -2,6 +2,7 @@ import concurrent.futures
 import socket
 from ipaddress import IPv4Network
 
+
 class Networking:
 
     def __init__(self, ips: IPv4Network, ports: list):
@@ -97,22 +98,23 @@ class TcpScanner(Networking):
 
     def __init__(self, ips: IPv4Network, ports: list):
         Networking.__init__(self, ips, ports)
-        self.SCAN_TYPE = 'tcp'
+        self.scan_type = 'tcp'
         self._ips = ips
         self.ports = ports
 
-        self.do_scan(self.SCAN_TYPE)
+        self.do_scan(self.scan_type)
 
 
 class UdpScanner(Networking):
 
     def __init__(self, ips: IPv4Network, ports: list):
         Networking.__init__(self, ips, ports)
-        self.SCAN_TYPE = 'udp'
+        self.scan_type = 'udp'
         self._ips = ips
         self.ports = ports
 
-        self.do_scan(self.SCAN_TYPE)
+        self.do_scan(self.scan_type)
+
 
 class SocksProxy:
 
