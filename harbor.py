@@ -1,7 +1,8 @@
+#!/usr/bin/env python3
+
 import ipaddress
 import argparse
-
-from harbor.networking import Networking
+from harbor.networking import TcpScanner, UdpScanner
 
 
 def main():
@@ -15,18 +16,16 @@ def main():
     parser.add_argument('-t', '--type', required=True, type=str,
                         default="tcp", dest="scan_type",
                         help='Specify protocol (i.e. "tcp" or "udp")')
-    parser.add_argument("--pdf", required=False, type=str,
-                        default=None, dest="pdf",
-                        help='Specify PDF report name')
-    parser.add_argument("--html", required=False, type=str,
-                        default=None, dest="html",
-                        help='Specify HTML report name')
 
     args = parser.parse_args()
 
     ip_range = ipaddress.ip_network(args.ip)
-    network = Networking(ip_range, args.ports)
-    network.do_scan("tcp")
+
+    if args.scan_type == 'tcp':
+        scanner = TcpScanner(ip_range, args.ports)
+
+    if args.scan_type == 'udp':
+        scanner = UdpScanner(ip_range, args.ports)
 
 
 if __name__ == '__main__':
