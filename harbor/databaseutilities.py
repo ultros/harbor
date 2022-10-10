@@ -20,15 +20,11 @@ class DatabaseUtilities:
     def close_cursor(self):
         self.cursor.close()
 
-    def insert_record(self, id: int, ip: str, port: int):
+    def insert_record(self,ip: str, port: int):
         """Insert a record into the database."""
-        parameters = (id, ip, port)
+        parameters = (ip, port)
 
-        sql = ("""
-        INSERT INTO "host" (
-        "id", "ip", "port") VALUES
-        (?, ?, ?)
-        """)
+        sql = '''INSERT INTO hosts (ip, port) VALUES (?, ?);'''
 
         self.cursor.execute(sql, parameters)
         self.connection.commit()
@@ -36,7 +32,7 @@ class DatabaseUtilities:
     def create_table(self):
         self.connection.execute("""
         CREATE TABLE "hosts" (
-        "id" INTEGER,
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
         "ip" TEXT,
         "port" INTEGER);
         """)
@@ -56,9 +52,6 @@ class DatabaseUtilities:
         self.cursor.execute("""
         SELECT * FROM "hosts"
         WHERE""")
-
-    def create_database(self):
-        pass
 
 
 class DatabaseManagement(DatabaseUtilities):

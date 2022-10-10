@@ -1,6 +1,8 @@
 import concurrent.futures
 import socket
 from ipaddress import IPv4Network
+from typing import NoReturn, Tuple
+from harbor.databaseutilities import DatabaseUtilities
 
 
 class Networking:
@@ -30,7 +32,7 @@ class Networking:
     def delete_hostnames(self):
         self.hostnames = []
 
-    def build_socket_list(self):
+    def build_socket_list(self) -> list:
         """Builds a list of IP/Port pairs (sockets)
         and returns this list.
         """
@@ -43,7 +45,7 @@ class Networking:
         return socket_list
 
     @staticmethod
-    def socket_connect(ip: str, port: int, scan_type: str):
+    def socket_connect(ip: str, port: int, scan_type: str) -> Tuple[str, int]:
 
         match scan_type:
             case "tcp":
@@ -65,10 +67,14 @@ class Networking:
         except Exception as e:
             print(e)
 
-    def do_scan(self, scan_type: str):
+    def do_scan(self, scan_type: str) -> NoReturn:
         """Prepare a concurrent TCP or UDP scan against a list of IP addresses
         and port numbers.
+
+        Argument:
+            scan_type -- TCP, UDP, etc.
         """
+        dbu = DatabaseUtilities("databases/harbor.db")
 
         i = 0
         print("[+] Building socket list...")
@@ -85,13 +91,18 @@ class Networking:
 
             for future in concurrent.futures.as_completed(futures):
                 response = future.result()
+
                 if response is not None:
                     print(f"{response[0]}:{response[1]}")
+                    dbu.insert_record(response[0], response[1])
 
                 i += 1
                 print(f"{i} out of {len(socket_list)}", end="\r")
 
             print(f"[+] Scan completed ({i} of {len(socket_list)})")
+        dbu.cursor.close()
+        dbu.disconnect_database()
+        print(f"[+] Records written to database.")
 
 
 class TcpScanner(Networking):

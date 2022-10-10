@@ -2,7 +2,10 @@
 
 import ipaddress
 import argparse
+import os
+import re
 from harbor.networking import TcpScanner, UdpScanner
+from harbor.databaseutilities import DatabaseUtilities
 
 
 def main():
@@ -18,6 +21,18 @@ def main():
                         help='Specify protocol (i.e. "tcp" or "udp")')
 
     args = parser.parse_args()
+
+    dbu = DatabaseUtilities("databases/harbor.db")  # create database if it does not exist
+    dbu.connect_database()
+    if os.path.exists("databases/harbor.db"):
+        try:
+            dbu.create_table()
+        except Exception as e:
+            if re.findall("exists", str(e)):
+                pass
+    print(f"[+] Database (databases/harbor.db) loaded successfully.")
+    dbu.cursor.close()
+    dbu.disconnect_database()
 
     ip_range = ipaddress.ip_network(args.ip)
 
