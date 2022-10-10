@@ -79,6 +79,7 @@ class Networking:
         i = 0
         print("[+] Building socket list...")
         socket_list = self.build_socket_list()
+        total_sockets = len(socket_list)
         print(f"[+] {len(socket_list)} entries in socket list.")
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
@@ -93,13 +94,13 @@ class Networking:
                 response = future.result()
 
                 if response is not None:
-                    print(f"{response[0]}:{response[1]}")
+                    print(f"{response[0]}:{response[1]}                         ")
                     dbu.insert_record(response[0], response[1])
 
                 i += 1
-                print(f"{i} out of {len(socket_list)}", end="\r")
+                print(f"{i} out of {total_sockets}", end="\r")
 
-            print(f"[+] Scan completed ({i} of {len(socket_list)})")
+            print(f"[+] Scan completed ({i} of {total_sockets})")
         dbu.cursor.close()
         dbu.disconnect_database()
         print(f"[+] Records written to database.")
