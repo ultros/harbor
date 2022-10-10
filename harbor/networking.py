@@ -98,7 +98,7 @@ class Networking:
                     dbu.insert_record(response[0], response[1])
 
                 i += 1
-                print(f"{i} out of {total_sockets}", end="\x1b[1K\r")
+                print(f"{i} out of {total_sockets}", end="\x1b[1K\r")  # to end of line
 
             print(f"[+] Scan completed ({i} of {total_sockets})")
         dbu.cursor.close()
