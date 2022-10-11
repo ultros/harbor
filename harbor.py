@@ -22,9 +22,12 @@ def main():
 
     args = parser.parse_args()
 
-    dbu = DatabaseUtilities("databases/harbor.db")  # create database if it does not exist
+    path = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(path, 'databases/harbor.db')
+
+    dbu = DatabaseUtilities(db_path)  # create database if it does not exist
     dbu.connect_database()
-    if os.path.exists("databases/harbor.db"):
+    if os.path.exists(db_path):
         try:
             dbu.create_table()
         except Exception as e:

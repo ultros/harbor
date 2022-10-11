@@ -3,6 +3,7 @@ import socket
 from ipaddress import IPv4Network
 from typing import NoReturn, Tuple
 from harbor.databaseutilities import DatabaseUtilities
+import os
 
 
 class Networking:
@@ -74,7 +75,10 @@ class Networking:
         Argument:
             scan_type -- TCP, UDP, etc.
         """
-        dbu = DatabaseUtilities("databases/harbor.db")
+
+        path = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(path, '../databases/harbor.db')
+        dbu = DatabaseUtilities(db_path)
 
         i = 0
         print("[+] Building socket list...")
