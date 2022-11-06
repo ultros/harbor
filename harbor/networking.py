@@ -77,7 +77,7 @@ class Networking:
         """
 
         path = os.path.dirname(os.path.abspath(__file__))
-        db_path = os.path.join(path, '../databases/harbor.db')
+        db_path = os.path.join(path + '/../databases/harbor.db')
         dbu = DatabaseUtilities(db_path)
 
         i = 0
@@ -96,6 +96,7 @@ class Networking:
 
             for future in concurrent.futures.as_completed(futures):
                 response = future.result()
+                #print(response)
 
                 if response is not None:
                     print(f"{response[0]}:{response[1]}")
@@ -105,8 +106,6 @@ class Networking:
                 print(f"{i} out of {total_sockets}", end="\x1b[1K\r")  # to end of line
 
             print(f"[+] Scan completed ({i} of {total_sockets})")
-        dbu.cursor.close()
-        dbu.disconnect_database()
         print(f"[+] Records written to database.")
 
 

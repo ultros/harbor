@@ -23,7 +23,7 @@ def main():
     args = parser.parse_args()
 
     path = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(path, 'databases/harbor.db')
+    db_path = os.path.join(path + '/databases/harbor.db')
 
     dbu = DatabaseUtilities(db_path)  # create database if it does not exist
     dbu.connect_database()
@@ -34,8 +34,6 @@ def main():
             if re.findall("exists", str(e)):
                 pass
     print(f"[+] Database (databases/harbor.db) loaded successfully.")
-    dbu.cursor.close()
-    dbu.disconnect_database()
 
     ip_range = ipaddress.ip_network(args.ip)
 

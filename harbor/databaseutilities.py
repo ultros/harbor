@@ -5,20 +5,11 @@ class DatabaseUtilities:
 
     def __init__(self, database_path: str):
         self.database_path = database_path
-        self.connection = sqlite3.connect(database_path)
+        self.connection = sqlite3.connect(self.database_path)
         self.cursor = self.connection.cursor()
 
     def connect_database(self):
         self.connection = sqlite3.connect(self.database_path)
-
-    def disconnect_database(self):
-        self.connection.close()
-
-    def create_cursor(self):
-        self.cursor = self.connection.cursor()
-
-    def close_cursor(self):
-        self.cursor.close()
 
     def insert_record(self,ip: str, port: int):
         """Insert a record into the database."""
