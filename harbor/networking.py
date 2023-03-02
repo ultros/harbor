@@ -6,6 +6,7 @@ from harbor.databaseutilities import DatabaseUtilities
 import os
 
 
+
 class Networking:
 
     def __init__(self, ips: IPv4Network, ports: list):
@@ -75,7 +76,6 @@ class Networking:
         Argument:
             scan_type -- TCP, UDP, etc.
         """
-
         path = os.path.dirname(os.path.abspath(__file__))
         db_path = os.path.join(path + '/../databases/harbor.db')
         dbu = DatabaseUtilities(db_path)
@@ -96,7 +96,6 @@ class Networking:
 
             for future in concurrent.futures.as_completed(futures):
                 response = future.result()
-                #print(response)
 
                 if response is not None:
                     print(f"{response[0]}:{response[1]}")

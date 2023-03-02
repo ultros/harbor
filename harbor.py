@@ -3,6 +3,7 @@
 import ipaddress
 import argparse
 import os
+import pathlib
 import re
 from harbor.networking import TcpScanner, UdpScanner
 from harbor.databaseutilities import DatabaseUtilities
@@ -16,14 +17,15 @@ def main():
     parser.add_argument('-p', '--ports', nargs="+", required=True, type=int,
                         default=None, dest="ports",
                         help='Specify ports to scan (E.g. 22 80 443)')
-    parser.add_argument('-t', '--type', required=True, type=str,
+    parser.add_argument('-t', '--type', required=False, type=str,
                         default="tcp", dest="scan_type",
                         help='Specify protocol (i.e. "tcp" or "udp")')
 
     args = parser.parse_args()
 
-    path = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(path + '/databases/harbor.db')
+
+    db_path = f'{(pathlib.Path(os.readlink(__file__))).parent}/databases/harbor.db'
+    print(db_path)
 
     dbu = DatabaseUtilities(db_path)  # create database if it does not exist
     dbu.connect_database()
@@ -37,10 +39,10 @@ def main():
 
     ip_range = ipaddress.ip_network(args.ip)
 
-    if args.scan_type == 'tcp':
+    if args.scan_type.lower() == 'tcp':
         scanner = TcpScanner(ip_range, args.ports)
 
-    if args.scan_type == 'udp':
+    if args.scan_type.lower() == 'udp':
         scanner = UdpScanner(ip_range, args.ports)
 
 

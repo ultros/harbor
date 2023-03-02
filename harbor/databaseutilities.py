@@ -11,7 +11,7 @@ class DatabaseUtilities:
     def connect_database(self):
         self.connection = sqlite3.connect(self.database_path)
 
-    def insert_record(self,ip: str, port: int):
+    def insert_record(self, ip: str, port: int):
         """Insert a record into the database."""
         parameters = (ip, port)
 
