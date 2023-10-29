@@ -48,15 +48,14 @@ class Networking:
 
     @staticmethod
     def socket_connect(ip: str, port: int, scan_type: str) -> Tuple[str, int]:
+        if scan_type == "tcp":
+            protocol = socket.SOCK_STREAM
+        elif scan_type == "udp":
+            protocol = socket.SOCK_DGRAM
+        else:
+            print('[!] Specify a protocol for scan (i.e. "tcp" or "udp")')
+            exit(1)
 
-        match scan_type:
-            case "tcp":
-                protocol = socket.SOCK_STREAM
-            case "udp":
-                protocol = socket.SOCK_DGRAM
-            case _:
-                '[!] Specify a protocol for scan (i.e. "tcp" or "udp")'
-                exit(0)
         try:
             connection = socket.socket(socket.AF_INET, protocol)
             connection.settimeout(3.0)
