@@ -24,7 +24,7 @@ def main():
     args = parser.parse_args()
 
     #db_path = f"{pathlib.Path(os.readlink(__file__)).parent}/databases/harbor.db"
-    db_path = f"{pathlib.Path().absolute()}/databases/harbor.db"
+    db_path = f"{os.path.dirname(__file__)}/databases/harbor.db"
     print(db_path)
 
     dbu = DatabaseUtilities(db_path)  # create database if it does not exist
